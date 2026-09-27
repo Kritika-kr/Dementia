@@ -12,7 +12,12 @@ from gensim.models import KeyedVectors
 from . import config
 from .feature_extraction import clean_text, avg_embedding
 
-_nlp = spacy.load(config.SPACY_MODEL_NAME)
+try:
+    _nlp = spacy.load(config.SPACY_MODEL_NAME)
+except OSError:
+    from spacy.cli import download as _spacy_download
+    _spacy_download(config.SPACY_MODEL_NAME)
+    _nlp = spacy.load(config.SPACY_MODEL_NAME)
 _tfidf = joblib.load(config.VECTORIZER_DIR / "tfidf_vectorizer.pkl")
 _count = joblib.load(config.VECTORIZER_DIR / "count_vectorizer.pkl")
 _glove = joblib.load(config.VECTORIZER_DIR / "glove_keyedvectors.pkl")

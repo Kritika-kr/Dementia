@@ -15,7 +15,15 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from . import config
 from .graph_features import graph_features_batch
 
-_nlp = spacy.load(config.SPACY_MODEL_NAME)
+_nlp = None
+try:
+    _nlp = spacy.load(config.SPACY_MODEL_NAME)
+except OSError:
+    # Model wheel wasn't picked up from requirements.txt (e.g. a fresh
+    # deployment environment) — download it once at startup as a fallback.
+    from spacy.cli import download as _spacy_download
+    _spacy_download(config.SPACY_MODEL_NAME)
+    _nlp = spacy.load(config.SPACY_MODEL_NAME)
 
 
 def clean_text(text: str) -> str:
