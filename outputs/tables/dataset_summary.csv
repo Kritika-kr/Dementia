@@ -1,0 +1,4 @@
+split,n_transcripts,n_speakers,n_control,n_dementia
+full,552,292,243,309
+train,435,233,197,238
+test,117,59,46,71
