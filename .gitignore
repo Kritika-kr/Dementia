@@ -24,7 +24,6 @@ Thumbs.db
 *.log
 
 # Large ML/model files
-*.pkl
 *.joblib
 *.h5
 *.keras

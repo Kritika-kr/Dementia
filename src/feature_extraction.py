@@ -66,7 +66,18 @@ class FeatureExtractor:
         self.tfidf.fit(cleaned)
         self.count.fit(cleaned)
         self.word2vec = word2vec_model
-        self.glove = gensim_api.load(config.GLOVE_MODEL_NAME)
+
+        full_glove = gensim_api.load(config.GLOVE_MODEL_NAME)
+        vocab = set()
+        for t in cleaned:
+            vocab.update(t.split())
+        # Keep only the words that actually appear in the corpus — a plain
+        # dict, not the full 400k-word pretrained model (which is ~480MB
+        # pickled and will fail to push to GitHub / deploy on Streamlit Cloud).
+        # avg_embedding() only ever does `in` and `[...]` lookups, both of
+        # which work identically on a dict as on a full KeyedVectors object.
+        self.glove = {w: full_glove[w] for w in vocab if w in full_glove}
+        del full_glove
         return self
 
     def transform(self, texts: pd.Series) -> dict:
